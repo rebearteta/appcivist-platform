@@ -33,15 +33,14 @@ public class ResourcesDelegate {
         res.setCreation(new Date());
         res.setResourceType(type);
         res.setConfirmed(confirmed);
-        UUID uid = UUID.randomUUID();
-        res.setPadId(uid.toString());
+        //UUID uid = UUID.randomUUID();
         String etherpadServerUrl = Play.application().configuration().getString(GlobalData.CONFIG_APPCIVIST_ETHERPAD_SERVER);
         String etherpadApiKey = Play.application().configuration().getString(GlobalData.CONFIG_APPCIVIST_ETHERPAD_API_KEY);
         try {
         	if (html)
-                res.createHtmlPad(etherpadServerUrl, etherpadApiKey, text);
-        	else 
-        		res.createTextPad(etherpadServerUrl, etherpadApiKey, text);
+                res.setPadId(res.createHtmlPad(etherpadServerUrl, etherpadApiKey, text));
+        	else
+                res.setPadId(res.createTextPad(etherpadServerUrl, etherpadApiKey, text));
         } catch (MalformedURLException e) {
             System.out.println("MalformedURLException");
             return null;
@@ -49,6 +48,7 @@ public class ResourcesDelegate {
             System.out.println("EPLiteException");
             return null;
         }
+        System.out.println("PAD+++++++++"+res.getPadId());
         Resource.create(res);
         return res;
     }

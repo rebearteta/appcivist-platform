@@ -2,6 +2,7 @@ package utils.services;
 
 import java.util.Map;
 
+import delegates.EPDelegate;
 import play.Play;
 import net.gjerull.etherpad.client.EPLiteClient;
 
@@ -11,6 +12,7 @@ public class EtherpadWrapper {
 	private String etherpadServerUrl = "";
 	private String etherpadApiKey = "";
 	private EPLiteClient client;
+	private EPDelegate clientDelegate;
 	
 	public static final String PAD_PATH_URL = "/p";
 	
@@ -18,6 +20,7 @@ public class EtherpadWrapper {
 		this.etherpadServerUrl = Play.application().configuration().getString("appcivist.services.etherpad.default.serverBaseUrl");
 		this.etherpadApiKey = Play.application().configuration().getString("appcivist.services.etherpad.default.apiKey");
 		this.client = new EPLiteClient(this.etherpadServerUrl, this.etherpadApiKey);
+		this.clientDelegate = new EPDelegate(this.etherpadServerUrl, this.etherpadApiKey);
 	}
 
 	public EtherpadWrapper(String server, String key) {
@@ -36,6 +39,7 @@ public class EtherpadWrapper {
 		}
 
 		this.client = new EPLiteClient(this.etherpadServerUrl, this.etherpadApiKey);
+		this.clientDelegate = new EPDelegate(this.etherpadServerUrl, this.etherpadApiKey);
 	}
 
 	/*
@@ -63,13 +67,19 @@ public class EtherpadWrapper {
 	public EPLiteClient getEtherpadClient() {
 		return this.client;
 	}
-	
+
+	/*
+	 * EtherpadClient instance
+	 */
+	public EPDelegate getEtherpadClientDelegate() {
+		return this.clientDelegate;
+	}
 	/*
 	 * API requests
 	 */
 
-	public void createPad(String padId) {
-		this.client.createPad(padId);
+	public String createPad(String padId) {
+		return this.clientDelegate.createPad();
 	}
 
 	public void createPad(String padId, String text) {

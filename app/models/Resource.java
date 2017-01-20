@@ -304,26 +304,31 @@ public class Resource extends AppCivistBaseModel {
 		this.url = new URL(urlAsString);
 	}
 	
-	public void createHtmlPad(String etherpadServerUrl, String etherpadApiKey, String text) throws MalformedURLException {
+	public String createHtmlPad(String etherpadServerUrl, String etherpadApiKey, String text) throws MalformedURLException {
 		EtherpadWrapper eth = new EtherpadWrapper(etherpadServerUrl,etherpadApiKey);
-		eth.createPad(this.padId);
+		String padId=eth.createPad(this.padId);
+		this.padId = padId;
+		System.out.println("PAD2+++++++++"+this.padId);
 		eth.setHTML(this.padId, text);
 		this.setReadOnlyPadId(eth.getReadOnlyId(this.padId));
 		this.setUrl(new URL(eth.getReadOnlyUrl(this.padId)));
+		return padId;
 	}
 	
-	public void createTextPad(String etherpadServerUrl, String etherpadApiKey, String text) throws MalformedURLException {
+	public String createTextPad(String etherpadServerUrl, String etherpadApiKey, String text) throws MalformedURLException {
 		EtherpadWrapper eth = new EtherpadWrapper(etherpadServerUrl,etherpadApiKey);
-		eth.createPad(this.padId);
+		String padId=eth.createPad(this.padId);
+		this.padId = padId;
 		eth.setText(this.padId, text);
 		this.setReadOnlyPadId(eth.getReadOnlyId(this.padId));
 		this.setUrl(new URL(eth.getReadOnlyUrl(this.padId)));
-		
+		return padId;
 	}
 
 	public void createReadablePad(String etherpadServerUrl, String etherpadApiKey, String text) throws MalformedURLException {
 		EtherpadWrapper eth = new EtherpadWrapper(etherpadServerUrl,etherpadApiKey);
-		eth.createPad(this.padId);
+		String padId=eth.createPad(this.padId);
+		this.padId = padId;
 		eth.setHTML(this.padId, text);
 		this.setUrl(new URL(eth.getEditUrl(this.padId)));
 	}
