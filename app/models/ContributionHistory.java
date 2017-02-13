@@ -94,7 +94,13 @@ public class ContributionHistory extends AppCivistBaseModel {
     @JsonView(Views.Public.class)
     private List<User> authors = new ArrayList<User>();
 
+    @ManyToMany(cascade = CascadeType.PERSIST)
+    @JoinTable(name = "contribution_history_contribution_feedback")
+    @JsonIgnore
+    private List<ContributionFeedback> contributionFeedbacks = new ArrayList<ContributionFeedback>();
+
     @Transient
+    @JsonView(Views.Public.class)
     ContributionHistoryItem changes;
 
     public static Finder<Long, ContributionHistory> find = new Finder<>(ContributionHistory.class);
@@ -233,6 +239,14 @@ public class ContributionHistory extends AppCivistBaseModel {
         this.assessmentSummary = assessmentSummary;
     }
 
+    public List<ContributionFeedback> getContributionFeedbacks() {
+        return contributionFeedbacks;
+    }
+
+    public void setContributionFeedbacks(List<ContributionFeedback> contributionFeedbacks) {
+        this.contributionFeedbacks = contributionFeedbacks;
+    }
+
     public static void createHistoricFromContribution(Contribution contribution) {
 
         boolean newRecord = contribution.getContributionId() == null;
@@ -269,6 +283,9 @@ public class ContributionHistory extends AppCivistBaseModel {
         if (contribution.getAuthors() != null) {
             contributionHistory.getAuthors().addAll(contribution.getAuthors());
         }
+        if (contribution.getContributionFeedbacks() != null) {
+            contributionHistory.getContributionFeedbacks().addAll(contribution.getContributionFeedbacks());
+        }
 
         try {
             ObjectMapper objectMapper = new ObjectMapper();
@@ -283,7 +300,7 @@ public class ContributionHistory extends AppCivistBaseModel {
             List<ContributionHistory> histories = getContributionsHistory(contribution.getContributionId());
             ContributionHistoryItem changeset = histories.get(histories.size()-1).getChanges();
             if (changeset.getAssociationChanges().isEmpty() && changeset.getExternalChanges().isEmpty()
-                    && changeset.getInternalChanges().isEmpty()){
+                    && changeset.getInternalChanges().isEmpty() && histories.size() > 1){
                 contributionHistory.softRemove();
             }
         } catch (Exception e) {
